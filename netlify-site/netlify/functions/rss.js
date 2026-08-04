@@ -108,9 +108,17 @@ exports.handler = async (event) => {
   const results = await Promise.all(
     feedUrls.map(async (feedUrl) => {
       try {
-        const res = await fetch(feedUrl, {
-          headers: { "User-Agent": "ux-feed-netlify-function/1.0" },
-        });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 6000);
+        let res;
+        try {
+          res = await fetch(feedUrl, {
+            headers: { "User-Agent": "ux-feed-netlify-function/1.0" },
+            signal: controller.signal,
+          });
+        } finally {
+          clearTimeout(timeout);
+        }
         if (!res.ok) return { url: feedUrl, error: `HTTP ${res.status}` };
         const xml = await res.text();
         const parsed = parseFeed(xml, perFeedLimit);
