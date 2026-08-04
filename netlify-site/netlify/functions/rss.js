@@ -23,6 +23,30 @@ function atomLink(block) {
   return m ? m[1] : "";
 }
 
+function extractImage(block) {
+  let m = block.match(/<media:content[^>]*url=["']([^"']+)["'][^>]*medium=["']image["']/i);
+  if (m) return m[1];
+  m = block.match(/<media:content[^>]*medium=["']image["'][^>]*url=["']([^"']+)["']/i);
+  if (m) return m[1];
+  m = block.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
+  if (m) return m[1];
+  m = block.match(/<enclosure[^>]*type=["']image[^"']*["'][^>]*url=["']([^"']+)["']/i);
+  if (m) return m[1];
+  m = block.match(/<enclosure[^>]*url=["']([^"']+)["'][^>]*type=["']image[^"']*["']/i);
+  if (m) return m[1];
+  m = block.match(/<img[^>]*src=["']([^"']+)["']/i);
+  if (m) return m[1];
+  const unescaped = block
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+  m = unescaped.match(/<img[^>]*src=["']([^"']+)["']/i);
+  if (m) return m[1];
+  return "";
+}
+
 function parseFeed(xml, perFeedLimit) {
   const feedTitleMatch = xml.match(/<title(?:\s[^>]*)?>([\s\S]*?)<\/title>/i);
   const feedTitle = feedTitleMatch ? xmlUnescape(feedTitleMatch[1]) : "";
@@ -37,6 +61,7 @@ function parseFeed(xml, perFeedLimit) {
       link: tagValue(block, "link"),
       pubDate: tagValue(block, "pubDate") || tagValue(block, "dc:date"),
       description: tagValue(block, "description") || tagValue(block, "content:encoded"),
+      image: extractImage(block),
     });
   });
 
@@ -46,6 +71,7 @@ function parseFeed(xml, perFeedLimit) {
       link: atomLink(block) || tagValue(block, "id"),
       pubDate: tagValue(block, "updated") || tagValue(block, "published"),
       description: tagValue(block, "summary") || tagValue(block, "content"),
+      image: extractImage(block),
     });
   });
 
@@ -57,6 +83,7 @@ function parseFeed(xml, perFeedLimit) {
       source: feedTitle,
       pubDate: it.pubDate,
       description: it.description ? it.description.slice(0, 280) : "",
+      image: it.image || "",
     })),
   };
 }
