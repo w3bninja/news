@@ -318,11 +318,32 @@ footer a { color: var(--ink-soft); }
     var uxNews = {
       id: 'ux-news',
       name: 'UX News',
-      categories: ['AI & Agentic', 'Accessibility', 'Craft & Interaction', 'Strategy & Teams'],
+      categories: ['News', 'Conservative', 'UX', 'Web Design', 'Development'],
       feeds: [
-        { url: 'https://www.smashingmagazine.com/feed/', cat: 'Craft & Interaction' },
-        { url: 'https://www.nngroup.com/feed/rss/', cat: 'Strategy & Teams' },
-        { url: 'https://uxdesign.cc/feed', cat: 'AI & Agentic' }
+        { url: 'https://feeds.arstechnica.com/arstechnica/index', cat: 'News' },
+        { url: 'https://www.theverge.com/rss/index.xml', cat: 'News' },
+        { url: 'https://techcrunch.com/feed/', cat: 'News' },
+        { url: 'https://hnrss.org/frontpage', cat: 'News' },
+
+        { url: 'https://www.nationalreview.com/feed/', cat: 'Conservative' },
+        { url: 'https://thedispatch.com/feed', cat: 'Conservative' },
+        { url: 'https://www.newsmax.com/rss/Politics/1/', cat: 'Conservative' },
+
+        { url: 'https://www.smashingmagazine.com/feed/', cat: 'UX' },
+        { url: 'https://www.nngroup.com/feed/rss/', cat: 'UX' },
+        { url: 'https://uxdesign.cc/feed', cat: 'UX' },
+        { url: 'https://uxplanet.org/feed', cat: 'UX' },
+        { url: 'https://www.mindtheproduct.com/feed/', cat: 'UX' },
+
+        { url: 'https://css-tricks.com/feed/', cat: 'Web Design' },
+        { url: 'https://alistapart.com/main/feed/', cat: 'Web Design' },
+        { url: 'https://tympanus.net/codrops/feed/', cat: 'Web Design' },
+        { url: 'https://web.dev/feed.xml', cat: 'Web Design' },
+
+        { url: 'https://developer.mozilla.org/en-US/blog/rss.xml', cat: 'Development' },
+        { url: 'https://dev.to/feed', cat: 'Development' },
+        { url: 'https://github.blog/feed/', cat: 'Development' },
+        { url: 'https://blog.google/technology/ai/rss/', cat: 'Development' }
       ],
       liveItems: [],
       lastRefresh: null
