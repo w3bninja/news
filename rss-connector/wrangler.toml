@@ -1,0 +1,6 @@
+name = "ux-feed-rss-connector"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# After deploy, your connector's MCP endpoint will be:
+#   https://ux-feed-rss-connector.<your-subdomain>.workers.dev/mcp

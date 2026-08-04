@@ -1,0 +1,8 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[[redirects]]
+  from = "/api/rss"
+  to = "/.netlify/functions/rss"
+  status = 200

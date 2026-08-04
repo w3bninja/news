@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Signal — UX Feed</title>
+<style>
+:root {
+  --ink: #1b1f2a;
+  --ink-soft: #4a5063;
+  --paper: #f3f1ec;
+  --paper-raised: #ffffff;
+  --line: #dcd8cf;
+  --accent: #b5501f;
+  --accent-soft: #e8d9c8;
+  --shadow: 0 1px 2px rgba(27,31,42,0.06), 0 8px 24px -12px rgba(27,31,42,0.12);
+  --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #eae7df; --ink-soft: #b3aea0; --paper: #1a1815; --paper-raised: #232019;
+    --line: #38352c; --accent: #e08a4f; --accent-soft: #3a2c1f;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"] {
+  --ink: #eae7df; --ink-soft: #b3aea0; --paper: #1a1815; --paper-raised: #232019;
+  --line: #38352c; --accent: #e08a4f; --accent-soft: #3a2c1f;
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+:root[data-theme="light"] {
+  --ink: #1b1f2a; --ink-soft: #4a5063; --paper: #f3f1ec; --paper-raised: #ffffff;
+  --line: #dcd8cf; --accent: #b5501f; --accent-soft: #e8d9c8;
+  --shadow: 0 1px 2px rgba(27,31,42,0.06), 0 8px 24px -12px rgba(27,31,42,0.12);
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  margin: 0;
+  padding: 0 1.5rem 4rem;
+}
+
+.masthead { max-width: 880px; margin: 0 auto; padding: 3rem 0 1.5rem; border-bottom: 3px solid var(--ink); }
+.masthead .kicker {
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); display: flex; justify-content: space-between; margin-bottom: 0.9rem;
+}
+.masthead h1 { font-family: var(--font-display); font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 400; letter-spacing: -0.01em; margin: 0 0 0.5rem; text-wrap: balance; }
+.masthead p { font-size: 1.02rem; color: var(--ink-soft); max-width: 46rem; margin: 0; line-height: 1.55; }
+
+.toolbar { max-width: 880px; margin: 1.5rem auto 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.filters button {
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+  background: transparent; border: 1px solid var(--line); color: var(--ink-soft);
+  padding: 0.4rem 0.75rem; border-radius: 999px; cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap;
+}
+.filters button:hover { border-color: var(--ink-soft); color: var(--ink); }
+.filters button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.filters button.active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+.toolbar-right { display: flex; align-items: center; gap: 1rem; }
+.manage-btn, .refresh-btn {
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
+  background: none; border: none; color: var(--accent); cursor: pointer; padding: 0.4rem 0;
+}
+.manage-btn:hover, .refresh-btn:hover { text-decoration: underline; }
+.manage-btn:focus-visible, .refresh-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.refresh-btn:disabled { opacity: 0.5; cursor: default; text-decoration: none; }
+.refresh-status { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-soft); }
+
+main { max-width: 880px; margin: 2.25rem auto 0; display: flex; flex-direction: column; gap: 2.5rem; }
+
+.section-label {
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-soft); display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1rem;
+}
+.section-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+.feed { display: flex; flex-direction: column; }
+.card { display: grid; grid-template-columns: 5.5rem 1fr; gap: 1.1rem; padding: 1.35rem 0; border-bottom: 1px solid var(--line); position: relative; }
+.card:last-child { border-bottom: none; }
+.card-link { text-decoration: none; color: inherit; display: contents; }
+.card:hover .card-title { color: var(--accent); }
+.card-link:focus-visible .card-title { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+.card-date { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-soft); padding-top: 0.2rem; }
+.card-body { min-width: 0; }
+.card-meta { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+.card-source { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+.tag { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.14rem 0.5rem; border-radius: 999px; border: 1px solid currentColor; }
+.tag-live { border-style: dashed; }
+.card-title { font-family: var(--font-display); font-size: 1.32rem; line-height: 1.28; margin: 0 0 0.4rem; text-wrap: balance; transition: color 0.15s; }
+.card-dek { font-size: 0.95rem; line-height: 1.55; color: var(--ink-soft); margin: 0; max-width: 60ch; }
+
+.card-actions { position: absolute; top: 1.35rem; right: 0; display: flex; gap: 0.4rem; }
+.card-actions button {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--ink-soft); background: var(--paper); border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.14rem 0.55rem; cursor: pointer;
+}
+.card-actions button:hover { color: var(--accent); border-color: var(--accent); }
+
+footer {
+  max-width: 880px; margin: 3rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--line);
+  font-size: 0.85rem; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
+footer a { color: var(--ink-soft); }
+
+.add-source {
+  max-width: 880px; margin: 2.5rem auto 0; background: var(--paper-raised); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: var(--shadow); padding: 1.5rem 1.75rem 1.75rem;
+}
+.add-source summary {
+  cursor: pointer; font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent); list-style: none; display: flex; align-items: center; gap: 0.5rem;
+}
+.add-source summary::-webkit-details-marker { display: none; }
+.add-source summary::before { content: "+"; font-family: var(--font-display); font-size: 1.1rem; line-height: 1; transition: transform 0.15s; }
+.add-source[open] summary::before { transform: rotate(45deg); }
+.add-source summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.add-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem 1rem; margin-top: 1.35rem; }
+.add-form .full { grid-column: 1 / -1; }
+.add-form label { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.8rem; color: var(--ink-soft); }
+.add-form input, .add-form select, .add-form textarea {
+  font-family: var(--font-body); font-size: 0.92rem; color: var(--ink); background: var(--paper);
+  border: 1px solid var(--line); border-radius: 6px; padding: 0.55rem 0.65rem;
+}
+.add-form textarea { resize: vertical; min-height: 3.2rem; }
+.add-form input:focus-visible, .add-form select:focus-visible, .add-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cat-row { display: flex; gap: 0.5rem; align-items: center; }
+.cat-row select { flex: 1; }
+.cat-new { display: none; gap: 0.5rem; margin-top: 0.5rem; }
+.cat-new.show { display: flex; }
+.cat-new input { flex: 1; }
+.link-btn {
+  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.03em; text-transform: uppercase;
+  background: none; border: 1px solid var(--line); color: var(--ink-soft); border-radius: 6px;
+  padding: 0.55rem 0.7rem; cursor: pointer; white-space: nowrap;
+}
+.link-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+.add-form .actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.add-form button[type="submit"] {
+  font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase;
+  background: var(--ink); color: var(--paper); border: none; border-radius: 999px; padding: 0.6rem 1.1rem; cursor: pointer;
+}
+.add-form button[type="submit"]:hover { background: var(--accent); }
+.add-form button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.form-note { font-size: 0.78rem; color: var(--ink-soft); }
+
+.manage-cats {
+  max-width: 880px; margin: 1rem auto 0; background: var(--paper-raised); border: 1px solid var(--line);
+  border-radius: 10px; padding: 1.1rem 1.5rem; box-shadow: var(--shadow);
+}
+.manage-cats h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.05rem; margin: 0 0 0.75rem; }
+.cat-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.cat-list-row { display: flex; align-items: center; gap: 0.5rem; }
+.cat-list-row input[type="text"] {
+  flex: 1; font-family: var(--font-body); font-size: 0.88rem; padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
+}
+.cat-list-row select {
+  font-family: var(--font-body); font-size: 0.82rem; padding: 0.35rem 0.5rem;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
+}
+.cat-count { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-soft); min-width: 3.5rem; }
+.cat-del { font-size: 0.7rem; color: var(--ink-soft); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 0.3rem 0.55rem; cursor: pointer; }
+.cat-del:hover { color: #b5501f; border-color: #b5501f; }
+.feeds-note { font-size: 0.78rem; color: var(--ink-soft); margin-top: 1rem; padding-top: 0.9rem; border-top: 1px solid var(--line); }
+
+@media (max-width: 560px) {
+  .card { grid-template-columns: 1fr; gap: 0.3rem; }
+  .card-date { order: -1; }
+  .card-actions { position: static; margin-top: 0.5rem; }
+  .add-form { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="kicker"><span>The Signal · Personal UX Digest</span><span id="clock"></span></div>
+  <h1>What the UX world is talking about</h1>
+  <p>Your own running pull of design writing — organized into whatever categories actually matter to you, refreshed live from real RSS feeds.</p>
+</div>
+
+<div class="toolbar">
+  <div class="filters" id="filters"></div>
+  <div class="toolbar-right">
+    <span class="refresh-status" id="refresh-status"></span>
+    <button class="refresh-btn" id="refresh-btn" type="button">Refresh feeds</button>
+    <button class="manage-btn" id="manage-toggle" type="button">Manage categories</button>
+  </div>
+</div>
+
+<div class="manage-cats" id="manage-cats" hidden>
+  <h3>Categories</h3>
+  <div class="cat-list" id="cat-list"></div>
+  <div class="feeds-note">Live RSS sources are mapped to a category below. Add more in the "Add an article" panel's feed manager, or edit <code>FEEDS</code> in the page source.</div>
+</div>
+
+<main id="main"></main>
+
+<details class="add-source" id="add-source">
+  <summary>Add an article</summary>
+  <form class="add-form" id="add-form">
+    <label class="full">Article title
+      <input type="text" id="f-title" required placeholder="e.g. Figma Resource Library">
+    </label>
+    <label>Source / publication
+      <input type="text" id="f-source" required placeholder="e.g. Figma, r/UXDesign">
+    </label>
+    <label>Link
+      <input type="url" id="f-url" required placeholder="https://…">
+    </label>
+    <label class="full">Category
+      <div class="cat-row">
+        <select id="f-cat"></select>
+        <button type="button" class="link-btn" id="new-cat-toggle">+ New category</button>
+      </div>
+      <div class="cat-new" id="cat-new-row">
+        <input type="text" id="f-cat-new" placeholder="Name a new category">
+      </div>
+    </label>
+    <label>Date label
+      <input type="text" id="f-date" placeholder="e.g. Aug 4 or 2026">
+    </label>
+    <label class="full">Note (optional)
+      <textarea id="f-dek" placeholder="One line on why it's worth reading"></textarea>
+    </label>
+    <div class="actions full">
+      <button type="submit">Add to feed</button>
+      <span class="form-note">Manual additions save in this browser only.</span>
+    </div>
+  </form>
+</details>
+
+<footer>
+  <span>Your personal UX curation · organize freely, edit or remove anything</span>
+  <span id="updated"></span>
+</footer>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'ux-feed-items-v3';
+  var CAT_KEY = 'ux-feed-categories-v3';
+  var LIVE_KEY = 'ux-feed-live-items-v1';
+  var LAST_REFRESH_KEY = 'ux-feed-last-refresh-v1';
+  var PALETTE = ['#6b5b95', '#2f6b4f', '#b5501f', '#1f5c78', '#9c3d5e', '#3d6b8a', '#7a6a1f', '#5e4a8a'];
+  var PALETTE_DARK = ['#b6a8e0', '#7fc9a0', '#e08a4f', '#6fb8dc', '#d98ba8', '#7fb0d6', '#c9b45a', '#a996d9'];
+
+  var SEED_CATEGORIES = ['AI & Agentic', 'Accessibility', 'Craft & Interaction', 'Strategy & Teams'];
+
+  // Live RSS sources, mapped to a category. Edit freely.
+  var FEEDS = [
+    { url: 'https://www.smashingmagazine.com/feed/', cat: 'Craft & Interaction' },
+    { url: 'https://www.nngroup.com/feed/rss/', cat: 'Strategy & Teams' },
+    { url: 'https://uxdesign.cc/feed', cat: 'AI & Agentic' }
+  ];
+
+  var SEED_ITEMS = [
+    { title: 'Figma Resource Library', source: 'Figma', url: 'https://www.figma.com/resource-library/', cat: 'Craft & Interaction', date: '', dek: 'Guides, templates, and UX writing from the Figma team — a good one to check periodically.' },
+    { title: 'r/UXDesign', source: 'Reddit', url: 'https://www.reddit.com/r/UXDesign/', cat: 'Strategy & Teams', date: '', dek: 'Practitioner discussion, portfolio feedback, and hiring-market chatter from working UX designers.' }
+  ];
+
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function isDark() {
+    var t = document.documentElement.getAttribute('data-theme');
+    if (t === 'dark') return true;
+    if (t === 'light') return false;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+  function catColor(cat, cats) {
+    var idx = cats.indexOf(cat);
+    if (idx < 0) idx = 0;
+    var pal = isDark() ? PALETTE_DARK : PALETTE;
+    return pal[idx % pal.length];
+  }
+  function formatDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return iso.slice(0, 10);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function loadCats() {
+    try {
+      var c = JSON.parse(localStorage.getItem(CAT_KEY));
+      if (c && c.length) return c;
+    } catch (e) {}
+    localStorage.setItem(CAT_KEY, JSON.stringify(SEED_CATEGORIES));
+    return SEED_CATEGORIES.slice();
+  }
+  function saveCats(list) { localStorage.setItem(CAT_KEY, JSON.stringify(list)); }
+
+  function loadItems() {
+    try {
+      var i = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (i && i.length) return i;
+    } catch (e) {}
+    var seeded = SEED_ITEMS.map(function (it) { return Object.assign({ id: uid() }, it); });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+    return seeded;
+  }
+  function saveItems(list) { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+  function loadLiveItems() {
+    try { return JSON.parse(localStorage.getItem(LIVE_KEY)) || []; } catch (e) { return []; }
+  }
+  function saveLiveItems(list) { localStorage.setItem(LIVE_KEY, JSON.stringify(list)); }
+
+  var activeFilter = 'all';
+
+  async function refreshFeeds() {
+    var btn = document.getElementById('refresh-btn');
+    var status = document.getElementById('refresh-status');
+    btn.disabled = true;
+    status.textContent = 'Refreshing…';
+    try {
+      var feedUrls = FEEDS.map(function (f) { return f.url; }).join(',');
+      var res = await fetch('/api/rss?feeds=' + encodeURIComponent(feedUrls) + '&limit=6');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      var data = await res.json();
+      var live = [];
+      (data.feeds || []).forEach(function (feedResult) {
+        var mapping = FEEDS.find(function (f) { return f.url === feedResult.url; });
+        var cat = (mapping && mapping.cat) || 'General';
+        (feedResult.items || []).forEach(function (it) {
+          live.push({
+            id: 'live-' + (it.link || it.title),
+            title: it.title,
+            source: it.source || feedResult.source || '',
+            url: it.link,
+            cat: cat,
+            date: formatDate(it.pubDate),
+            dek: it.description,
+            live: true
+          });
+        });
+      });
+      saveLiveItems(live);
+      localStorage.setItem(LAST_REFRESH_KEY, new Date().toISOString());
+      status.textContent = 'Updated just now';
+    } catch (err) {
+      status.textContent = 'Refresh failed — try again later';
+    } finally {
+      btn.disabled = false;
+      render();
+    }
+  }
+
+  function render() {
+    var cats = loadCats();
+    var manualItems = loadItems();
+    var liveItems = loadLiveItems();
+    var items = liveItems.concat(manualItems);
+
+    var lastRefresh = localStorage.getItem(LAST_REFRESH_KEY);
+    var status = document.getElementById('refresh-status');
+    if (lastRefresh && !status.textContent) {
+      status.textContent = 'Last refreshed ' + new Date(lastRefresh).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+
+    var filterBar = document.getElementById('filters');
+    filterBar.innerHTML = '';
+    var allBtn = document.createElement('button');
+    allBtn.textContent = 'All';
+    allBtn.className = activeFilter === 'all' ? 'active' : '';
+    allBtn.addEventListener('click', function () { activeFilter = 'all'; render(); });
+    filterBar.appendChild(allBtn);
+    cats.forEach(function (cat) {
+      var btn = document.createElement('button');
+      btn.textContent = cat;
+      btn.className = activeFilter === cat ? 'active' : '';
+      btn.addEventListener('click', function () { activeFilter = cat; render(); });
+      filterBar.appendChild(btn);
+    });
+
+    var sel = document.getElementById('f-cat');
+    var prevVal = sel.value;
+    sel.innerHTML = '';
+    cats.forEach(function (cat) {
+      var opt = document.createElement('option');
+      opt.value = cat; opt.textContent = cat;
+      sel.appendChild(opt);
+    });
+    if (cats.indexOf(prevVal) >= 0) sel.value = prevVal;
+
+    var catList = document.getElementById('cat-list');
+    catList.innerHTML = '';
+    cats.forEach(function (cat, idx) {
+      var row = document.createElement('div');
+      row.className = 'cat-list-row';
+
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.value = cat;
+      input.addEventListener('change', function () {
+        var newName = input.value.trim();
+        if (!newName || newName === cat) { input.value = cat; return; }
+        var updatedCats = loadCats();
+        updatedCats[idx] = newName;
+        saveCats(updatedCats);
+        saveItems(loadItems().map(function (it) { if (it.cat === cat) it.cat = newName; return it; }));
+        saveLiveItems(loadLiveItems().map(function (it) { if (it.cat === cat) it.cat = newName; return it; }));
+        FEEDS.forEach(function (f) { if (f.cat === cat) f.cat = newName; });
+        if (activeFilter === cat) activeFilter = newName;
+        render();
+      });
+
+      var count = document.createElement('span');
+      count.className = 'cat-count';
+      var n = items.filter(function (it) { return it.cat === cat; }).length;
+      count.textContent = n + ' article' + (n === 1 ? '' : 's');
+
+      var del = document.createElement('button');
+      del.className = 'cat-del';
+      del.type = 'button';
+      del.textContent = 'Delete';
+      del.addEventListener('click', function () {
+        var remaining = loadCats().filter(function (c) { return c !== cat; });
+        if (!remaining.length) remaining = ['General'];
+        saveCats(remaining);
+        saveItems(loadItems().map(function (it) { if (it.cat === cat) it.cat = remaining[0]; return it; }));
+        saveLiveItems(loadLiveItems().map(function (it) { if (it.cat === cat) it.cat = remaining[0]; return it; }));
+        if (activeFilter === cat) activeFilter = 'all';
+        render();
+      });
+
+      row.appendChild(input);
+      row.appendChild(count);
+      row.appendChild(del);
+      catList.appendChild(row);
+    });
+
+    var main = document.getElementById('main');
+    main.innerHTML = '';
+    cats.forEach(function (cat) {
+      var catItems = items.filter(function (it) { return it.cat === cat; });
+      if (!catItems.length) return;
+      if (activeFilter !== 'all' && activeFilter !== cat) return;
+
+      var section = document.createElement('section');
+      var label = document.createElement('div');
+      label.className = 'section-label';
+      label.textContent = cat;
+      section.appendChild(label);
+
+      var feed = document.createElement('div');
+      feed.className = 'feed';
+
+      catItems.forEach(function (it) {
+        var card = document.createElement('div');
+        card.className = 'card';
+
+        var link = document.createElement('a');
+        link.className = 'card-link';
+        link.href = it.url;
+        link.target = '_blank';
+        link.rel = 'noopener';
+
+        var dateDiv = document.createElement('div');
+        dateDiv.className = 'card-date';
+        dateDiv.textContent = it.date || '';
+
+        var body = document.createElement('div');
+        body.className = 'card-body';
+
+        var meta = document.createElement('div');
+        meta.className = 'card-meta';
+        var source = document.createElement('span');
+        source.className = 'card-source';
+        source.textContent = it.source;
+        var tag = document.createElement('span');
+        tag.className = 'tag' + (it.live ? ' tag-live' : '');
+        tag.style.color = catColor(it.cat, cats);
+        tag.textContent = it.cat + (it.live ? ' · live' : '');
+        meta.appendChild(source);
+        meta.appendChild(tag);
+
+        var title = document.createElement('h2');
+        title.className = 'card-title';
+        title.textContent = it.title;
+
+        body.appendChild(meta);
+        body.appendChild(title);
+        if (it.dek) {
+          var dek = document.createElement('p');
+          dek.className = 'card-dek';
+          dek.textContent = it.dek;
+          body.appendChild(dek);
+        }
+
+        link.appendChild(dateDiv);
+        link.appendChild(body);
+        card.appendChild(link);
+
+        var actions = document.createElement('div');
+        actions.className = 'card-actions';
+
+        var shareBtn = document.createElement('button');
+        shareBtn.type = 'button';
+        shareBtn.textContent = 'Share';
+        shareBtn.addEventListener('click', function () {
+          if (navigator.share) {
+            navigator.share({ title: it.title, url: it.url }).catch(function () {});
+          } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(it.url).then(function () {
+              var prev = shareBtn.textContent;
+              shareBtn.textContent = 'Copied';
+              setTimeout(function () { shareBtn.textContent = prev; }, 1200);
+            }).catch(function () {});
+          }
+        });
+
+        actions.appendChild(shareBtn);
+
+        if (!it.live) {
+          var removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.textContent = 'Remove';
+          removeBtn.addEventListener('click', function () {
+            saveItems(loadItems().filter(function (x) { return x.id !== it.id; }));
+            render();
+          });
+          actions.appendChild(removeBtn);
+        }
+
+        card.appendChild(actions);
+        feed.appendChild(card);
+      });
+
+      section.appendChild(feed);
+      main.appendChild(section);
+    });
+
+    if (!main.children.length) {
+      var empty = document.createElement('p');
+      empty.style.color = 'var(--ink-soft)';
+      empty.textContent = 'Nothing here yet — refresh feeds or add an article below.';
+      main.appendChild(empty);
+    }
+  }
+
+  document.getElementById('manage-toggle').addEventListener('click', function () {
+    var panel = document.getElementById('manage-cats');
+    panel.hidden = !panel.hidden;
+  });
+  document.getElementById('refresh-btn').addEventListener('click', refreshFeeds);
+
+  document.getElementById('new-cat-toggle').addEventListener('click', function () {
+    document.getElementById('cat-new-row').classList.toggle('show');
+    document.getElementById('f-cat-new').focus();
+  });
+
+  document.getElementById('add-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var newCat = document.getElementById('f-cat-new').value.trim();
+    var cats = loadCats();
+    var cat;
+    if (newCat) {
+      if (cats.indexOf(newCat) < 0) { cats.push(newCat); saveCats(cats); }
+      cat = newCat;
+    } else {
+      cat = document.getElementById('f-cat').value;
+    }
+    var item = {
+      id: uid(),
+      title: document.getElementById('f-title').value.trim(),
+      source: document.getElementById('f-source').value.trim(),
+      url: document.getElementById('f-url').value.trim(),
+      cat: cat,
+      date: document.getElementById('f-date').value.trim(),
+      dek: document.getElementById('f-dek').value.trim()
+    };
+    if (!item.title || !item.url) return;
+    var items = loadItems();
+    items.unshift(item);
+    saveItems(items);
+    ev.target.reset();
+    document.getElementById('cat-new-row').classList.remove('show');
+    document.getElementById('add-source').removeAttribute('open');
+    render();
+  });
+
+  var now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  document.getElementById('updated').textContent = 'Page loaded ' + now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  render();
+
+  // Auto-refresh once per day per visitor
+  var last = localStorage.getItem(LAST_REFRESH_KEY);
+  var oneDay = 24 * 60 * 60 * 1000;
+  if (!last || (Date.now() - new Date(last).getTime()) > oneDay) {
+    refreshFeeds();
+  }
+})();
+</script>
+</body>
+</html>
