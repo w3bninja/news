@@ -4,212 +4,311 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Signal — News Feed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* SongSuey brand system, concept v2 — deep-space surfaces, neon accents. */
 :root {
-  --ink: #1b1f2a;
-  --ink-soft: #4a5063;
-  --paper: #f3f1ec;
-  --paper-raised: #ffffff;
-  --line: #dcd8cf;
-  --accent: #b5501f;
-  --accent-soft: #e8d9c8;
-  --shadow: 0 1px 2px rgba(27,31,42,0.06), 0 8px 24px -12px rgba(27,31,42,0.12);
-  --font-display: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
-  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #eae7df; --ink-soft: #b3aea0; --paper: #1a1815; --paper-raised: #232019;
-    --line: #38352c; --accent: #e08a4f; --accent-soft: #3a2c1f;
-    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
-  }
-}
-:root[data-theme="dark"] {
-  --ink: #eae7df; --ink-soft: #b3aea0; --paper: #1a1815; --paper-raised: #232019;
-  --line: #38352c; --accent: #e08a4f; --accent-soft: #3a2c1f;
-  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
-}
-:root[data-theme="light"] {
-  --ink: #1b1f2a; --ink-soft: #4a5063; --paper: #f3f1ec; --paper-raised: #ffffff;
-  --line: #dcd8cf; --accent: #b5501f; --accent-soft: #e8d9c8;
-  --shadow: 0 1px 2px rgba(27,31,42,0.06), 0 8px 24px -12px rgba(27,31,42,0.12);
+  --bg: #060b17;
+  --bg-mid: #0b1220;
+  --surface: #0f1825;
+  --surface-2: #162030;
+  --border: #1d3045;
+  --border-lit: #3d5c80;
+  --text: #cdd9e5;
+  --text-dim: #8b9bb4;
+
+  --purple: #b07bfc;
+  --magenta: #f857a6;
+  --blue: #56b0ff;
+  --cyan: #3dd6f5;
+
+  --high: #3ddc84;
+  --mid: #ffd23f;
+  --low: #ff6b6b;
+  --none: #4a5568;
+
+  --font: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --pad: clamp(1rem, 2.5vw, 2rem);
 }
 
 * { box-sizing: border-box; }
+
+html, body { width: 100%; }
 body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-body);
   margin: 0;
-  padding: 0 1.5rem 4rem;
+  min-height: 100vh;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(176, 123, 252, 0.16), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 92% 0%, rgba(61, 214, 245, 0.09), transparent 70%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
 }
 
-.masthead { max-width: 880px; margin: 0 auto; padding: 3rem 0 1.25rem; }
-.masthead .kicker {
-  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--accent); display: flex; justify-content: space-between; margin-bottom: 0.9rem;
-}
-.masthead h1 { font-family: var(--font-display); font-size: clamp(2.2rem, 5.5vw, 3.2rem); font-weight: 400; letter-spacing: -0.01em; margin: 0 0 0.5rem; text-wrap: balance; }
-.masthead p { font-size: 1.02rem; color: var(--ink-soft); max-width: 46rem; margin: 0; line-height: 1.55; }
+a { color: inherit; text-decoration: none; }
 
-/* Subject tabs */
+.eyebrow, .kicker {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+/* ---------- masthead ---------- */
+.masthead {
+  padding: clamp(1.75rem, 4vw, 3.25rem) var(--pad) clamp(1.25rem, 2.5vw, 2rem);
+  border-bottom: 1px solid var(--border);
+}
+.masthead .kicker { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.masthead h1 {
+  margin: 0.5rem 0 0.4rem;
+  font-size: clamp(2.4rem, 7vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+  background: linear-gradient(135deg, var(--purple), var(--magenta) 45%, var(--blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.masthead p {
+  margin: 0; max-width: 62ch;
+  color: var(--text-dim); font-size: clamp(0.9rem, 1.1vw, 1.02rem);
+}
+
+/* ---------- subject tabs ---------- */
 .subject-tabs {
-  max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 0.35rem;
-  border-bottom: 3px solid var(--ink); flex-wrap: wrap;
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+  padding: 0.9rem var(--pad) 0;
 }
-.subject-tab {
-  font-family: var(--font-display); font-size: 1.05rem; background: none; border: none;
-  color: var(--ink-soft); padding: 0.6rem 1rem 0.7rem; cursor: pointer; position: relative; top: 3px;
-  border-bottom: 3px solid transparent;
+.subject-tabs button {
+  font-family: var(--font); font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em;
+  color: var(--text-dim); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 999px; padding: 0.4rem 0.95rem; cursor: pointer; transition: all 0.15s;
 }
-.subject-tab:hover { color: var(--ink); }
-.subject-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.subject-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
-.subject-tab .remove-x {
-  margin-left: 0.4rem; font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-soft);
-  opacity: 0; transition: opacity 0.15s;
+.subject-tabs button:hover { color: var(--text); border-color: var(--border-lit); }
+.subject-tabs button.active {
+  color: var(--cyan); border-color: rgba(61, 214, 245, 0.45);
+  background: rgba(61, 214, 245, 0.1);
+  box-shadow: 0 0 14px rgba(61, 214, 245, 0.2);
 }
-.subject-tab:hover .remove-x { opacity: 0.7; }
-.subject-tab .remove-x:hover { color: var(--accent); opacity: 1; }
-.subject-add {
-  font-family: var(--font-mono); font-size: 0.85rem; background: none; border: none;
-  color: var(--accent); cursor: pointer; padding: 0.6rem 0.6rem 0.7rem; position: relative; top: 3px;
+.subject-tabs .remove-x {
+  margin-left: 0.35rem; padding: 0 0.15rem; border: none; background: none;
+  color: inherit; opacity: 0.55; font-size: 0.9rem; border-radius: 3px;
 }
-.subject-add:hover { text-decoration: underline; }
-.subject-add-form { display: none; align-items: center; gap: 0.4rem; padding: 0.5rem 0; }
-.subject-add-form.show { display: flex; }
-.subject-add-form input {
-  font-family: var(--font-body); font-size: 0.85rem; padding: 0.35rem 0.55rem;
-  border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
+.subject-tabs .remove-x:hover { opacity: 1; color: var(--low); }
+.subject-tabs form { display: flex; gap: 0.4rem; }
+.subject-tabs form input {
+  font-family: var(--font); font-size: 0.82rem; padding: 0.4rem 0.7rem;
+  border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface); color: var(--text); min-width: 11rem;
 }
-.subject-add-form button {
-  font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.03em;
-  background: var(--ink); color: var(--paper); border: none; border-radius: 6px; padding: 0.35rem 0.7rem; cursor: pointer;
-}
-.subject-add-form button:hover { background: var(--accent); }
+.subject-tabs form button { background: var(--surface-2); }
 
-.toolbar { max-width: 880px; margin: 1.25rem auto 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+/* ---------- toolbar ---------- */
+.toolbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  padding: 0.85rem var(--pad);
+  background: rgba(6, 11, 23, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.filters { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .filters button {
-  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
-  background: transparent; border: 1px solid var(--line); color: var(--ink-soft);
-  padding: 0.4rem 0.75rem; border-radius: 999px; cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap;
+  font-family: var(--font); font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-dim); background: none; border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.3rem 0.7rem; cursor: pointer; transition: all 0.15s;
 }
-.filters button:hover { border-color: var(--ink-soft); color: var(--ink); }
-.filters button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.filters button.active { background: var(--ink); border-color: var(--ink); color: var(--paper); }
-
-.toolbar-right { display: flex; align-items: center; gap: 1rem; }
-.manage-btn, .refresh-btn {
-  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
-  background: none; border: none; color: var(--accent); cursor: pointer; padding: 0.4rem 0;
+.filters button:hover { color: var(--text); border-color: var(--border-lit); }
+.filters button.active {
+  color: var(--purple); border-color: rgba(176, 123, 252, 0.45);
+  background: rgba(176, 123, 252, 0.1);
+  box-shadow: 0 0 12px rgba(176, 123, 252, 0.2);
 }
-.manage-btn:hover, .refresh-btn:hover { text-decoration: underline; }
-.manage-btn:focus-visible, .refresh-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.refresh-btn:disabled { opacity: 0.5; cursor: default; text-decoration: none; }
-.refresh-status { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-soft); }
+.toolbar-right { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.refresh-status { font-family: var(--mono); font-size: 0.7rem; color: var(--text-dim); }
 
-main { max-width: 880px; margin: 1.75rem auto 0; }
+.refresh-btn, .manage-btn, .relevance-btn {
+  font-family: var(--font); font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-dim); background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.42rem 0.85rem; cursor: pointer; transition: all 0.15s;
+}
+.refresh-btn:hover, .manage-btn:hover, .relevance-btn:hover {
+  color: var(--text); border-color: var(--border-lit);
+}
+.refresh-btn[disabled] { opacity: 0.5; cursor: default; }
+.relevance-btn.on {
+  color: var(--high); border-color: rgba(61, 220, 132, 0.4);
+  background: rgba(61, 220, 132, 0.1);
+  box-shadow: 0 0 12px rgba(61, 220, 132, 0.18);
+}
 
-.feed { display: flex; flex-direction: column; }
-.card { display: grid; grid-template-columns: 4.5rem 6rem 1fr; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--line); position: relative; align-items: start; }
-.card:last-child { border-bottom: none; }
-.card-link { text-decoration: none; color: inherit; display: contents; }
-.card:hover .card-title { color: var(--accent); }
-.card-link:focus-visible .card-title { outline: 2px solid var(--accent); outline-offset: 4px; }
+/* ---------- manage panel ---------- */
+.manage-cats {
+  margin: 1rem var(--pad) 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.4rem clamp(1rem, 2vw, 1.75rem);
+  display: grid; gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  align-items: start;
+}
+.manage-cats h3, .manage-cats h4 {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-dim); margin: 0 0 0.75rem; padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.manage-cats .hint, .tune p.hint { font-size: 0.8rem; color: var(--text-dim); margin: 0 0 0.7rem; }
 
-.card-date { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-soft); padding-top: 0.2rem; }
-.card-thumb {
-  width: 6rem; height: 4rem; border-radius: 6px; object-fit: cover; background: var(--accent-soft);
-  display: block; flex-shrink: 0;
+.cat-list { display: flex; flex-direction: column; gap: 0.45rem; }
+.cat-list-row { display: flex; align-items: center; gap: 0.5rem; }
+.cat-count { font-family: var(--mono); font-size: 0.68rem; color: var(--text-dim); min-width: 3rem; }
+.cat-del, .catalog-row button {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-dim); background: none; border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.26rem 0.6rem; cursor: pointer; transition: all 0.15s;
+}
+.cat-del:hover { color: var(--low); border-color: rgba(255, 107, 107, 0.5); }
+.catalog-row button:hover:not(:disabled) { color: var(--cyan); border-color: rgba(61, 214, 245, 0.5); }
+.catalog-row button:disabled { opacity: 0.4; cursor: default; }
+
+.manage-cats input[type="text"],
+.manage-cats input[type="url"],
+.manage-cats select,
+.manage-cats textarea {
+  font-family: var(--font); font-size: 0.85rem; padding: 0.45rem 0.65rem;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--bg-mid); color: var(--text);
+}
+.manage-cats input:focus-visible,
+.manage-cats select:focus-visible,
+.manage-cats textarea:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; }
+
+.cat-list-row input[type="text"] { flex: 1; min-width: 0; }
+.cat-add-row, .feed-add-row { display: flex; gap: 0.5rem; margin-top: 0.85rem; flex-wrap: wrap; }
+.cat-add-row input, .feed-add-row input[type="url"] { flex: 1; min-width: 9rem; }
+
+.cat-add-row button, .feed-add-row button, .tune button, .catalog-bulk {
+  font-family: var(--font); font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  background: linear-gradient(135deg, var(--purple), var(--magenta));
+  color: #0a0f1a; border: none; border-radius: 5px;
+  padding: 0.45rem 0.95rem; cursor: pointer; transition: filter 0.15s;
+}
+.cat-add-row button:hover, .feed-add-row button:hover, .tune button:hover, .catalog-bulk:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+.catalog-bulk:disabled { opacity: 0.35; cursor: default; }
+
+.feed-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; padding: 0.14rem 0; }
+.feed-row .feed-url {
+  flex: 1; min-width: 0; color: var(--text-dim); font-family: var(--mono); font-size: 0.72rem;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.feed-row select, .feed-add-row select { font-size: 0.78rem; padding: 0.3rem 0.45rem; }
+#feed-list { max-height: 17rem; overflow-y: auto; }
+
+.tune label {
+  display: block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.3rem;
+}
+.tune textarea { width: 100%; min-height: 4.5rem; resize: vertical; margin-bottom: 0.75rem; line-height: 1.5; }
+
+.catalog-group { margin-bottom: 1rem; }
+.catalog-group > h5 {
+  font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--cyan); margin: 0 0 0.4rem;
+}
+.catalog-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.2rem 0; font-size: 0.84rem; }
+.catalog-row .cat-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.catalog-row .cat-note { font-family: var(--mono); font-size: 0.66rem; color: var(--text-dim); }
+.catalog-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+#catalog-list { max-height: 26rem; overflow-y: auto; }
+
+/* ---------- the feed ---------- */
+main { padding: clamp(1.25rem, 2.5vw, 2rem) var(--pad) 0; }
+.feed {
+  display: grid; gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+}
+.card {
+  display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  overflow: hidden; transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+}
+.card:hover {
+  border-color: var(--border-lit);
+  box-shadow: 0 0 0 1px rgba(61, 214, 245, 0.1), 0 8px 28px rgba(0, 0, 0, 0.45);
+  transform: translateY(-2px);
+}
+.card.buried { opacity: 0.5; }
+.card-link { display: flex; flex-direction: column; flex: 1; }
+
+.card-thumb, .card-thumb-placeholder {
+  width: 100%; aspect-ratio: 16 / 9; object-fit: cover;
+  background: var(--bg-mid); border-bottom: 1px solid var(--border); display: block;
 }
 .card-thumb-placeholder {
-  width: 6rem; height: 4rem; border-radius: 6px; background: var(--accent-soft);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 1.4rem; color: var(--accent); opacity: 0.6;
+  display: grid; place-items: center;
+  font-size: 1.7rem; font-weight: 900; color: var(--border-lit);
+  background: linear-gradient(135deg, var(--surface-2), var(--bg-mid));
 }
-.card-body { min-width: 0; }
-.card-meta { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.3rem; flex-wrap: wrap; }
-.card-source { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
-.tag { font-family: var(--font-mono); font-size: 0.63rem; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.12rem 0.45rem; border-radius: 999px; border: 1px solid currentColor; }
-.tag-live { border-style: dashed; }
+.card-body { padding: 0.85rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.45rem; flex: 1; }
+.card-date { font-family: var(--mono); font-size: 0.68rem; color: var(--text-dim); }
+.card-meta { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
+.card-source {
+  font-family: var(--mono); font-size: 0.66rem; color: var(--text-dim);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 12rem;
+}
+.tag {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1px solid currentColor; border-radius: 4px; padding: 0.1rem 0.45rem;
+}
 .card-title {
-  font-family: var(--font-display); font-size: 1.16rem; line-height: 1.24; margin: 0 0 0.3rem; text-wrap: balance; transition: color 0.15s;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin: 0; font-size: 1.02rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.28;
+  color: var(--text);
 }
+.card:hover .card-title { color: #fff; }
 .card-dek {
-  font-size: 0.88rem; line-height: 1.5; color: var(--ink-soft); margin: 0; max-width: 60ch;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin: 0; font-size: 0.83rem; color: var(--text-dim); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
+.card-why {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.02em;
+  color: var(--none); border: 1px solid currentColor; border-radius: 999px; padding: 0.02rem 0.45rem;
+}
+.card-why.tier-high { color: var(--high); box-shadow: 0 0 9px rgba(61, 220, 132, 0.22); }
+.card-why.tier-mid { color: var(--mid); }
+.card-why.tier-low { color: var(--low); }
 
-.card-actions { position: absolute; top: 1.1rem; right: 0; display: flex; gap: 0.4rem; }
+.card-actions { display: flex; gap: 0.4rem; padding: 0 1rem 0.85rem; }
 .card-actions button {
-  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.04em; text-transform: uppercase;
-  color: var(--ink-soft); background: var(--paper); border: 1px solid var(--line);
-  border-radius: 999px; padding: 0.14rem 0.55rem; cursor: pointer;
+  font-family: var(--font); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-dim); background: none; border: 1px solid var(--border);
+  border-radius: 4px; padding: 0.24rem 0.6rem; cursor: pointer; transition: all 0.15s;
 }
-.card-actions button:hover { color: var(--accent); border-color: var(--accent); }
+.card-actions button:hover { color: var(--cyan); border-color: rgba(61, 214, 245, 0.5); }
+
+main > p { color: var(--text-dim); }
 
 footer {
-  max-width: 880px; margin: 3rem auto 0; padding-top: 1.5rem; border-top: 1px solid var(--line);
-  font-size: 0.85rem; color: var(--ink-soft); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  margin-top: 3rem; padding: 1.5rem var(--pad) 2.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim);
+  display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
 }
-footer a { color: var(--ink-soft); }
-
-.manage-cats {
-  max-width: 880px; margin: 1rem auto 0; background: var(--paper-raised); border: 1px solid var(--line);
-  border-radius: 10px; padding: 1.1rem 1.5rem; box-shadow: var(--shadow);
-}
-.manage-cats h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.05rem; margin: 0 0 0.75rem; }
-.cat-list { display: flex; flex-direction: column; gap: 0.5rem; }
-.cat-list-row { display: flex; align-items: center; gap: 0.5rem; }
-.cat-list-row input[type="text"] {
-  flex: 1; font-family: var(--font-body); font-size: 0.88rem; padding: 0.4rem 0.6rem;
-  border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
-}
-.cat-count { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-soft); min-width: 3.5rem; }
-.cat-del { font-size: 0.7rem; color: var(--ink-soft); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 0.3rem 0.55rem; cursor: pointer; }
-.cat-del:hover { color: #b5501f; border-color: #b5501f; }
-.cat-add-row { display: flex; gap: 0.5rem; margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--line); }
-.cat-add-row input {
-  flex: 1; font-family: var(--font-body); font-size: 0.88rem; padding: 0.45rem 0.6rem;
-  border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
-}
-.cat-add-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.cat-add-row button {
-  font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase;
-  background: var(--ink); color: var(--paper); border: none; border-radius: 6px; padding: 0.45rem 0.9rem; cursor: pointer;
-}
-.cat-add-row button:hover { background: var(--accent); }
-.cat-add-row button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-.feeds-list { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--line); }
-.feeds-list h4 { font-family: var(--font-display); font-weight: 400; font-size: 0.95rem; margin: 0 0 0.3rem; }
-.feed-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; }
-.feed-row .feed-url { flex: 1; color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.feed-row select { font-family: var(--font-body); font-size: 0.8rem; padding: 0.3rem 0.4rem; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink); }
-.feed-add-row { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
-.feed-add-row input[type="url"] {
-  flex: 1; min-width: 10rem; font-family: var(--font-body); font-size: 0.85rem; padding: 0.4rem 0.55rem;
-  border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
-}
-.feed-add-row select {
-  font-family: var(--font-body); font-size: 0.85rem; padding: 0.4rem 0.55rem;
-  border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--ink);
-}
-.feed-add-row button {
-  font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em;
-  background: var(--ink); color: var(--paper); border: none; border-radius: 6px; padding: 0.4rem 0.8rem; cursor: pointer;
-}
-.feed-add-row button:hover { background: var(--accent); }
 
 @media (max-width: 560px) {
-  .card { grid-template-columns: 5rem 1fr; gap: 0.7rem; }
-  .card-date { grid-column: 1 / -1; order: -1; }
-  .card-thumb, .card-thumb-placeholder { width: 5rem; height: 3.4rem; }
-  .card-actions { position: static; margin-top: 0.5rem; }
+  .toolbar { position: static; }
+  .card-source { max-width: 8rem; }
 }
 </style>
 </head>
@@ -217,8 +316,8 @@ footer a { color: var(--ink-soft); }
 
 <div class="masthead">
   <div class="kicker"><span>The Signal · Personal Digest</span><span id="clock"></span></div>
-  <h1>Your subjects, your sources</h1>
-  <p>One merged running feed per subject — refreshed live from real RSS, organized however you want, with as many subjects as you need.</p>
+  <h1>Signal, not noise</h1>
+  <p>Every feed you follow, pulled fresh each day and ranked against what you actually care about — the rest stays buried.</p>
 </div>
 
 <div class="subject-tabs" id="subject-tabs"></div>
@@ -228,6 +327,7 @@ footer a { color: var(--ink-soft); }
   <div class="toolbar-right">
     <span class="refresh-status" id="refresh-status"></span>
     <button class="refresh-btn" id="refresh-btn" type="button">Refresh feeds</button>
+    <button class="relevance-btn" id="relevance-toggle" type="button">Relevance</button>
     <button class="manage-btn" id="manage-toggle" type="button">Manage</button>
   </div>
 </div>
@@ -240,6 +340,18 @@ footer a { color: var(--ink-soft); }
     <button type="submit">Add category</button>
   </form>
 
+  <div class="tune">
+    <h4>Relevance</h4>
+    <p class="hint">Comma-separated. Interests rank stories up; mutes drop them entirely. Matching is on headline and summary text.</p>
+    <form id="tune-form">
+      <label for="tune-interests">Interested in</label>
+      <textarea id="tune-interests" placeholder="ux, accessibility, css, llm, supreme court"></textarea>
+      <label for="tune-mutes">Never show</label>
+      <textarea id="tune-mutes" placeholder="horoscope, celebrity, deals"></textarea>
+      <button type="submit">Save relevance</button>
+    </form>
+  </div>
+
   <div class="feeds-list">
     <h4>RSS feeds for this subject</h4>
     <div id="feed-list"></div>
@@ -248,6 +360,13 @@ footer a { color: var(--ink-soft); }
       <select id="feed-add-cat"></select>
       <button type="submit">Add feed</button>
     </form>
+  </div>
+
+  <div class="catalog">
+    <h4>Feed catalog</h4>
+    <p class="hint" style="font-size:0.78rem;color:var(--ink-soft);margin:0 0 0.6rem;">Vetted sources you can add in one click. Added feeds land in the category shown.</p>
+    <div class="catalog-actions" id="catalog-actions"></div>
+    <div id="catalog-list"></div>
   </div>
 </div>
 
@@ -260,13 +379,152 @@ footer a { color: var(--ink-soft); }
 
 <script>
 (function () {
-  var SUBJECTS_KEY = 'signal-subjects-v1';
+  var SUBJECTS_KEY = 'signal-subjects-v2';
+  var LEGACY_SUBJECTS_KEY = 'signal-subjects-v1';
   var ACTIVE_SUBJECT_KEY = 'signal-active-subject-v1';
-  var PALETTE = ['#6b5b95', '#2f6b4f', '#b5501f', '#1f5c78', '#9c3d5e', '#3d6b8a', '#7a6a1f', '#5e4a8a'];
-  var PALETTE_DARK = ['#b6a8e0', '#7fc9a0', '#e08a4f', '#6fb8dc', '#d98ba8', '#7fb0d6', '#c9b45a', '#a996d9'];
+  var RELEVANCE_ON_KEY = 'signal-relevance-on-v1';
+  var PALETTE = ['#b07bfc', '#3dd6f5', '#56b0ff', '#f857a6', '#3ddc84', '#ffd23f', '#8b9bb4', '#b07bfc'];
+  var PALETTE_DARK = PALETTE;
 
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function slug(name) { return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || uid(); }
+
+  // Browsable catalog of vetted sources. Each entry maps to a default category.
+  var CATALOG = [
+    { group: 'UX & Product Design', cat: 'UX', feeds: [
+      { name: 'Nielsen Norman Group', url: 'https://www.nngroup.com/feed/rss/' },
+      { name: 'Smashing Magazine', url: 'https://www.smashingmagazine.com/feed/' },
+      { name: 'UX Collective', url: 'https://uxdesign.cc/feed' },
+      { name: 'UX Planet', url: 'https://uxplanet.org/feed' },
+      { name: 'Mind the Product', url: 'https://www.mindtheproduct.com/feed/' },
+      { name: 'A List Apart', url: 'https://alistapart.com/main/feed/' },
+      { name: 'Lenny\u2019s Newsletter', url: 'https://www.lennysnewsletter.com/feed' }
+    ]},
+    { group: 'Web Dev & Front-End', cat: 'Web Design', feeds: [
+      { name: 'CSS-Tricks', url: 'https://css-tricks.com/feed/' },
+      { name: 'MDN Blog', url: 'https://developer.mozilla.org/en-US/blog/rss.xml' },
+      { name: 'web.dev', url: 'https://web.dev/feed.xml' },
+      { name: 'Codrops', url: 'https://tympanus.net/codrops/feed/' },
+      { name: 'CSS Wizardry', url: 'https://csswizardry.com/feed.xml' },
+      { name: 'Overreacted', url: 'https://overreacted.io/rss.xml' },
+      { name: 'GitHub Blog', url: 'https://github.blog/feed/' },
+      { name: 'DEV Community', url: 'https://dev.to/feed' }
+    ]},
+    { group: 'AI & Machine Learning', cat: 'AI', feeds: [
+      { name: 'OpenAI News', url: 'https://openai.com/news/rss.xml' },
+      { name: 'Google AI Blog', url: 'https://blog.google/technology/ai/rss/' },
+      { name: 'MIT Tech Review \u2014 AI', url: 'https://www.technologyreview.com/topic/artificial-intelligence/feed' },
+      { name: 'The Verge \u2014 AI', url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml' },
+      { name: 'Ars Technica \u2014 AI', url: 'https://arstechnica.com/ai/feed/' },
+      { name: 'Simon Willison', url: 'https://simonwillison.net/atom/everything/' },
+      { name: 'Import AI', url: 'https://importai.substack.com/feed' }
+    ]},
+    { group: 'Tech News', cat: 'News', feeds: [
+      { name: 'Ars Technica', url: 'https://feeds.arstechnica.com/arstechnica/index' },
+      { name: 'The Verge', url: 'https://www.theverge.com/rss/index.xml' },
+      { name: 'TechCrunch', url: 'https://techcrunch.com/feed/' },
+      { name: 'Hacker News \u2014 Front Page', url: 'https://hnrss.org/frontpage' },
+      { name: 'Wired', url: 'https://www.wired.com/feed/rss' },
+      { name: 'Engadget', url: 'https://www.engadget.com/rss.xml' },
+      { name: '404 Media', url: 'https://www.404media.co/rss/' }
+    ]},
+    { group: 'US News & Politics', cat: 'Politics', feeds: [
+      { name: 'NPR News', url: 'https://feeds.npr.org/1001/rss.xml' },
+      { name: 'BBC \u2014 US & Canada', url: 'https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml' },
+      { name: 'NYT \u2014 Home Page', url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml' },
+      { name: 'Politico \u2014 Politics', url: 'https://rss.politico.com/politics-news.xml' },
+      { name: 'The Hill', url: 'https://thehill.com/feed/' },
+      { name: 'CNN \u2014 Top Stories', url: 'https://www.theguardian.com/us-news/rss' }
+    ]},
+    { group: 'Right-of-Center', cat: 'Conservative', feeds: [
+      { name: 'National Review', url: 'https://www.nationalreview.com/feed/' },
+      { name: 'The Dispatch', url: 'https://thedispatch.com/feed' },
+      { name: 'Reason', url: 'https://reason.com/latest/feed/' },
+      { name: 'The American Conservative', url: 'https://www.theamericanconservative.com/feed/' },
+      { name: 'Washington Free Beacon', url: 'https://freebeacon.com/feed/' },
+      { name: 'Fox News \u2014 Politics', url: 'https://feeds.foxnews.com/foxnews/politics' },
+      { name: 'Newsmax \u2014 Politics', url: 'https://www.newsmax.com/rss/Politics/1/' }
+    ]}
+  ];
+
+  var DEFAULT_INTERESTS = [
+    'ux', 'user experience', 'usability', 'design system', 'accessibility', 'a11y',
+    'interface', 'product design', 'figma', 'prototype', 'user research',
+    'css', 'javascript', 'typescript', 'react', 'browser', 'front-end', 'frontend',
+    'web performance', 'core web vitals', 'html', 'api', 'open source',
+    'ai', 'llm', 'model', 'anthropic', 'claude', 'openai', 'chatgpt', 'gemini',
+    'machine learning', 'agent', 'inference', 'training',
+    'congress', 'senate', 'election', 'supreme court', 'white house', 'policy',
+    'regulation', 'legislation', 'court', 'governor', 'campaign'
+  ];
+
+  var DEFAULT_MUTES = [
+    'horoscope', 'celebrity', 'kardashian', 'royal family', 'box office',
+    'coupon', 'best deals', 'deal of the day', 'sponsored', 'giveaway', 'sweepstakes'
+  ];
+
+  function parseTerms(str) {
+    return (str || '').split(',').map(function (t) { return t.trim().toLowerCase(); }).filter(Boolean);
+  }
+  function escapeRe(t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function termHit(haystack, term) {
+    return new RegExp('(^|[^a-z0-9])' + escapeRe(term) + '([^a-z0-9]|$)', 'i').test(haystack);
+  }
+
+  // Scores an item against the subject's interests. Keyword hits drive relevance;
+  // recency only breaks ties, so a stale keyword match can't outrank today's news.
+  function scoreItem(it, subject) {
+    var interests = subject.interests || [];
+    var mutes = subject.mutes || [];
+    var title = ' ' + (it.title || '').toLowerCase() + ' ';
+    var dek = ' ' + (it.dek || '').toLowerCase() + ' ';
+    var both = title + dek;
+
+    for (var m = 0; m < mutes.length; m++) {
+      if (termHit(both, mutes[m])) {
+        return { topic: 0, matched: [], muted: true, mutedBy: mutes[m], ageDays: 999, sort: -1e9 };
+      }
+    }
+
+    var matched = [];
+    var topic = 0;
+    interests.forEach(function (term) {
+      var inTitle = termHit(title, term);
+      var inDek = !inTitle && termHit(dek, term);
+      if (inTitle || inDek) {
+        matched.push(term);
+        topic += inTitle ? 3 : 1;
+      }
+    });
+
+    var ageDays = 999;
+    if (it.rawDate) {
+      var t = new Date(it.rawDate).getTime();
+      if (!isNaN(t)) ageDays = (Date.now() - t) / 86400000;
+    }
+    var recency = ageDays < 1 ? 2 : ageDays < 3 ? 1 : ageDays > 14 ? -1 : 0;
+
+    return {
+      topic: topic,
+      matched: matched,
+      muted: false,
+      ageDays: ageDays,
+      sort: topic * 100 + recency * 10 - Math.min(ageDays, 30)
+    };
+  }
+
+  // "Hide the worst": drop muted items, and drop stale items that match nothing.
+  function isBuried(sc) {
+    if (sc.muted) return true;
+    return sc.topic === 0 && sc.ageDays > 2;
+  }
+
+  function scoreTier(sc) {
+    if (sc.topic >= 6) return 'high';
+    if (sc.topic >= 3) return 'mid';
+    if (sc.topic >= 1) return 'low';
+    return 'none';
+  }
 
   // Curated starter feed sets, matched against a new subject's name by keyword.
   var STARTER_SETS = [
@@ -333,8 +591,10 @@ footer a { color: var(--ink-soft); }
   function defaultSubjects() {
     var uxNews = {
       id: 'ux-news',
-      name: 'UX News',
-      categories: ['News', 'Conservative', 'UX', 'Web Design', 'Development'],
+      name: 'Daily Digest',
+      categories: ['UX', 'Web Design', 'Development', 'AI', 'News', 'Politics', 'Conservative'],
+      interests: DEFAULT_INTERESTS.slice(),
+      mutes: DEFAULT_MUTES.slice(),
       feeds: [
         { url: 'https://feeds.arstechnica.com/arstechnica/index', cat: 'News' },
         { url: 'https://www.theverge.com/rss/index.xml', cat: 'News' },
@@ -359,7 +619,18 @@ footer a { color: var(--ink-soft); }
         { url: 'https://developer.mozilla.org/en-US/blog/rss.xml', cat: 'Development' },
         { url: 'https://dev.to/feed', cat: 'Development' },
         { url: 'https://github.blog/feed/', cat: 'Development' },
-        { url: 'https://blog.google/technology/ai/rss/', cat: 'Development' }
+
+        { url: 'https://blog.google/technology/ai/rss/', cat: 'AI' },
+        { url: 'https://openai.com/news/rss.xml', cat: 'AI' },
+        { url: 'https://arstechnica.com/ai/feed/', cat: 'AI' },
+        { url: 'https://www.technologyreview.com/topic/artificial-intelligence/feed', cat: 'AI' },
+        { url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml', cat: 'AI' },
+
+        { url: 'https://feeds.npr.org/1001/rss.xml', cat: 'Politics' },
+        { url: 'https://rss.politico.com/politics-news.xml', cat: 'Politics' },
+        { url: 'https://thehill.com/feed/', cat: 'Politics' },
+
+        { url: 'https://reason.com/latest/feed/', cat: 'Conservative' }
       ],
       liveItems: [],
       lastRefresh: null
@@ -367,12 +638,27 @@ footer a { color: var(--ink-soft); }
     return [uxNews];
   }
 
+  // Every subject needs interest/mute arrays; older saved data predates them.
+  function normalizeSubject(sub) {
+    if (!sub.interests) sub.interests = DEFAULT_INTERESTS.slice();
+    if (!sub.mutes) sub.mutes = DEFAULT_MUTES.slice();
+    if (!sub.categories) sub.categories = ['General'];
+    if (!sub.feeds) sub.feeds = [];
+    return sub;
+  }
+
   function loadSubjects() {
-    try {
-      var s = JSON.parse(localStorage.getItem(SUBJECTS_KEY));
-      if (s && s.length) return s;
-    } catch (e) {}
-    var seeded = defaultSubjects();
+    var raw = null;
+    try { raw = JSON.parse(localStorage.getItem(SUBJECTS_KEY)); } catch (e) {}
+    if (!raw || !raw.length) {
+      try { raw = JSON.parse(localStorage.getItem(LEGACY_SUBJECTS_KEY)); } catch (e) {}
+    }
+    if (raw && raw.length) {
+      var migrated = raw.map(normalizeSubject);
+      saveSubjects(migrated);
+      return migrated;
+    }
+    var seeded = defaultSubjects().map(normalizeSubject);
     saveSubjects(seeded);
     return seeded;
   }
@@ -382,6 +668,7 @@ footer a { color: var(--ink-soft); }
   var activeSubjectId = localStorage.getItem(ACTIVE_SUBJECT_KEY) || subjects[0].id;
   if (!subjects.find(function (s) { return s.id === activeSubjectId; })) activeSubjectId = subjects[0].id;
   var activeFilter = 'all';
+  var relevanceOn = localStorage.getItem(RELEVANCE_ON_KEY) !== 'off';
 
   function getActiveSubject() { return subjects.find(function (s) { return s.id === activeSubjectId; }); }
   function persist() { saveSubjects(subjects); }
@@ -504,6 +791,8 @@ footer a { color: var(--ink-soft); }
         id: slug(name) + '-' + uid(),
         name: name,
         categories: starter ? starter.categories.slice() : ['General'],
+        interests: DEFAULT_INTERESTS.slice(),
+        mutes: DEFAULT_MUTES.slice(),
         feeds: starter ? starter.feeds.map(function (f) { return { url: f.url, cat: f.cat }; }) : [],
         liveItems: [],
         lastRefresh: null
@@ -647,24 +936,51 @@ footer a { color: var(--ink-soft); }
       feedList.appendChild(row);
     });
 
+    syncTuneForm(subject);
+    renderCatalog(subject);
+
     // Merged feed — sorted, not grouped by category
     var main = document.getElementById('main');
     main.innerHTML = '';
 
-    var filtered = items.filter(function (it) { return activeFilter === 'all' || it.cat === activeFilter; });
-    filtered.sort(function (a, b) {
-      var da = a.rawDate ? new Date(a.rawDate).getTime() : 0;
-      var db = b.rawDate ? new Date(b.rawDate).getTime() : 0;
-      if (da || db) return db - da;
-      return 0;
-    });
+    var inCat = items.filter(function (it) { return activeFilter === 'all' || it.cat === activeFilter; });
+
+    // Score every item, then either rank-and-hide or fall back to plain reverse-chron.
+    var scored = inCat.map(function (it) { return { it: it, sc: scoreItem(it, subject) }; });
+    var buriedCount = scored.filter(function (row) { return isBuried(row.sc); }).length;
+
+    var visible = relevanceOn
+      ? scored.filter(function (row) { return !isBuried(row.sc); })
+      : scored.slice();
+
+    if (relevanceOn) {
+      visible.sort(function (a, b) { return b.sc.sort - a.sc.sort; });
+    } else {
+      visible.sort(function (a, b) {
+        var da = a.it.rawDate ? new Date(a.it.rawDate).getTime() : 0;
+        var db = b.it.rawDate ? new Date(b.it.rawDate).getTime() : 0;
+        return db - da;
+      });
+    }
+    var filtered = visible;
+
+    var relBtn = document.getElementById('relevance-toggle');
+    relBtn.className = 'relevance-btn' + (relevanceOn ? ' on' : '');
+    relBtn.textContent = relevanceOn
+      ? 'Relevance on \u00b7 ' + filtered.length + '/' + scored.length
+      : 'Relevance off';
+    relBtn.title = relevanceOn
+      ? buriedCount + ' low-relevance or muted stories hidden. Click to show everything.'
+      : 'Showing everything in reverse-chronological order. Click to rank by relevance.';
 
     if (!filtered.length) {
       var empty = document.createElement('p');
       empty.style.color = 'var(--ink-soft)';
-      empty.textContent = subject.feeds.length
-        ? 'Nothing in this category yet.'
-        : 'Nothing here yet — add an RSS feed in Manage.';
+      empty.textContent = !subject.feeds.length
+        ? 'Nothing here yet — add feeds from the catalog in Manage.'
+        : (buriedCount
+            ? 'Everything here scored below your relevance bar. Click "Relevance on" to show all ' + buriedCount + '.'
+            : 'Nothing in this category yet.');
       main.appendChild(empty);
       return;
     }
@@ -672,9 +988,11 @@ footer a { color: var(--ink-soft); }
     var feed = document.createElement('div');
     feed.className = 'feed';
 
-    filtered.forEach(function (it) {
+    filtered.forEach(function (row) {
+      var it = row.it;
+      var sc = row.sc;
       var card = document.createElement('div');
-      card.className = 'card';
+      card.className = 'card' + (isBuried(sc) ? ' buried' : '');
 
       var link = document.createElement('a');
       link.className = 'card-link';
@@ -713,8 +1031,22 @@ footer a { color: var(--ink-soft); }
       tag.className = 'tag' + (it.live ? ' tag-live' : '');
       tag.style.color = catColor(it.cat, cats);
       tag.textContent = it.cat + (it.live ? ' · live' : '');
+      meta.appendChild(dateDiv);
       meta.appendChild(source);
       meta.appendChild(tag);
+
+      if (sc.muted) {
+        var muted = document.createElement('span');
+        muted.className = 'card-why';
+        muted.textContent = 'muted: ' + sc.mutedBy;
+        meta.appendChild(muted);
+      } else if (sc.matched.length) {
+        var why = document.createElement('span');
+        why.className = 'card-why tier-' + scoreTier(sc);
+        why.textContent = sc.matched.slice(0, 3).join(' \u00b7 ');
+        why.title = 'Matched your interests: ' + sc.matched.join(', ');
+        meta.appendChild(why);
+      }
 
       var title = document.createElement('h2');
       title.className = 'card-title';
@@ -729,7 +1061,6 @@ footer a { color: var(--ink-soft); }
         body.appendChild(dek);
       }
 
-      link.appendChild(dateDiv);
       link.appendChild(thumb);
       link.appendChild(body);
       card.appendChild(link);
@@ -759,6 +1090,104 @@ footer a { color: var(--ink-soft); }
 
     main.appendChild(feed);
   }
+
+  function syncTuneForm(subject) {
+    var i = document.getElementById('tune-interests');
+    var m = document.getElementById('tune-mutes');
+    if (document.activeElement !== i) i.value = (subject.interests || []).join(', ');
+    if (document.activeElement !== m) m.value = (subject.mutes || []).join(', ');
+  }
+
+  function addCatalogFeed(subject, feed, cat) {
+    if (subject.categories.indexOf(cat) < 0) subject.categories.push(cat);
+    if (!subject.feeds.some(function (f) { return f.url === feed.url; })) {
+      subject.feeds.push({ url: feed.url, cat: cat });
+    }
+  }
+
+  function renderCatalog(subject) {
+    var actions = document.getElementById('catalog-actions');
+    var list = document.getElementById('catalog-list');
+    actions.innerHTML = '';
+    list.innerHTML = '';
+
+    var have = {};
+    subject.feeds.forEach(function (f) { have[f.url] = true; });
+
+    CATALOG.forEach(function (group) {
+      var missing = group.feeds.filter(function (f) { return !have[f.url]; });
+
+      var addAll = document.createElement('button');
+      addAll.type = 'button';
+      addAll.className = 'catalog-bulk';
+      addAll.textContent = 'Add all \u00b7 ' + group.group;
+      addAll.disabled = !missing.length;
+      addAll.addEventListener('click', function () {
+        missing.forEach(function (f) { addCatalogFeed(subject, f, group.cat); });
+        persist();
+        render();
+        refreshFeeds();
+      });
+      actions.appendChild(addAll);
+
+      var wrap = document.createElement('div');
+      wrap.className = 'catalog-group';
+      var h = document.createElement('h5');
+      h.textContent = group.group;
+      wrap.appendChild(h);
+
+      group.feeds.forEach(function (f) {
+        var row = document.createElement('div');
+        row.className = 'catalog-row';
+
+        var name = document.createElement('span');
+        name.className = 'cat-name';
+        name.textContent = f.name;
+        name.title = f.url;
+
+        var note = document.createElement('span');
+        note.className = 'cat-note';
+        note.textContent = group.cat;
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        if (have[f.url]) {
+          btn.textContent = 'Added';
+          btn.disabled = true;
+        } else {
+          btn.textContent = 'Add';
+          btn.addEventListener('click', function () {
+            addCatalogFeed(subject, f, group.cat);
+            persist();
+            render();
+            refreshFeeds();
+          });
+        }
+
+        row.appendChild(name);
+        row.appendChild(note);
+        row.appendChild(btn);
+        wrap.appendChild(row);
+      });
+
+      list.appendChild(wrap);
+    });
+  }
+
+  document.getElementById('tune-form').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var subject = getActiveSubject();
+    subject.interests = parseTerms(document.getElementById('tune-interests').value);
+    subject.mutes = parseTerms(document.getElementById('tune-mutes').value);
+    persist();
+    render();
+  });
+
+  document.getElementById('relevance-toggle').addEventListener('click', function () {
+    relevanceOn = !relevanceOn;
+    localStorage.setItem(RELEVANCE_ON_KEY, relevanceOn ? 'on' : 'off');
+    render();
+  });
 
   document.getElementById('manage-toggle').addEventListener('click', function () {
     var panel = document.getElementById('manage-cats');
